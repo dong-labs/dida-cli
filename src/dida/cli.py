@@ -8,8 +8,8 @@ from datetime import datetime
 from dong import json_output, ValidationError, NotFoundError
 
 from . import __version__
-from .db.connection import init_db, get_connection
-from .const import DB_PATH, PRIORITIES
+from .db.connection import init_db, get_connection, get_db_path
+from .const import PRIORITIES
 
 app = typer.Typer(
     name="dida",
