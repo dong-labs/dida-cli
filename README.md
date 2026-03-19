@@ -37,7 +37,7 @@
 ## 安装
 
 ```bash
-pip install dida-cli
+pipx install dong-dida
 ```
 
 ## 快速开始
