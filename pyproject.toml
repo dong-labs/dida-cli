@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dida-cli"
-version = "0.2.3"
+version = "0.3.0"
 description = "事咚咚 - 个人待办管理的 CLI 工具"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,12 +18,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
 ]
 
 [project.scripts]
-dida = "dida.cli:app"
+dong-dida = "dida.cli:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dida"]

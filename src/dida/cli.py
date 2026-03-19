@@ -48,6 +48,7 @@ def add(
     priority: str = typer.Option("medium", "--priority", "-p",
                                    help=f"优先级: {','.join(PRIORITIES)}"),
     note: str = typer.Option(None, "--note", "-n", help="备注"),
+    tags: str = typer.Option(None, "--tags", "-t", help="标签（逗号分隔）"),
 ):
     """创建待办"""
     if not content or not content.strip():
@@ -56,19 +57,25 @@ def add(
     if priority not in PRIORITIES:
         raise ValidationError("priority", f"无效的优先级: {priority}")
 
+    # 处理标签
+    tags_str = ""
+    if tags:
+        tags_list = [t.strip() for t in tags.split(",") if t.strip()]
+        tags_str = ",".join(tags_list)
+
     with get_connection() as conn:
         cursor = conn.cursor()
         now = datetime.now().isoformat()
         cursor.execute(
             """
-            INSERT INTO todos (content, due_date, priority, note, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO todos (content, due_date, priority, note, tags, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (content.strip(), due, priority, note, now, now)
+            (content.strip(), due, priority, note, tags_str, now, now)
         )
         todo_id = cursor.lastrowid
 
-    return {"id": todo_id, "content": content, "priority": priority}
+    return {"id": todo_id, "content": content, "priority": priority, "tags": tags_str}
 
 
 @app.command()
@@ -77,6 +84,7 @@ def ls(
     limit: int = typer.Option(20, "--limit", "-l", help="显示数量"),
     completed: bool = typer.Option(None, "--completed", help="按完成状态筛选"),
     priority: str = typer.Option(None, "--priority", "-p", help="按优先级筛选"),
+    tag: str = typer.Option(None, "--tag", "-t", help="按标签筛选"),
 ):
     """列出待办"""
     with get_connection() as conn:
@@ -93,12 +101,16 @@ def ls(
             conditions.append("priority = ?")
             params.append(priority)
 
+        if tag:
+            conditions.append("tags LIKE ?")
+            params.append(f"%{tag}%")
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         params.append(limit)
 
         cursor.execute(
             f"""
-            SELECT id, content, completed, priority, due_date, created_at, note
+            SELECT id, content, completed, priority, due_date, tags, created_at, note
             FROM todos
             WHERE {where_clause}
             ORDER BY completed ASC, created_at DESC
@@ -182,6 +194,7 @@ def update(
     due: str = typer.Option(None, "--due", "-d", help="更新截止时间"),
     priority: str = typer.Option(None, "--priority", "-p", help="更新优先级"),
     note: str = typer.Option(None, "--note", "-n", help="更新备注"),
+    tags: str = typer.Option(None, "--tags", "-t", help="更新标签"),
 ):
     """更新待办"""
     with get_connection() as conn:
@@ -207,6 +220,10 @@ def update(
         if note is not None:
             updates.append("note = ?")
             params.append(note)
+        if tags is not None:
+            tags_list = [t.strip() for t in tags.split(",") if t.strip()]
+            updates.append("tags = ?")
+            params.append(",".join(tags_list))
 
         if updates:
             updates.append("updated_at = ?")
@@ -256,11 +273,11 @@ def search(
         cursor.execute(
             """
             SELECT * FROM todos
-            WHERE content LIKE ? OR note LIKE ?
+            WHERE content LIKE ? OR note LIKE ? OR tags LIKE ?
             ORDER BY created_at DESC
             LIMIT ?
             """,
-            (f"%{keyword}%", f"%{keyword}%", limit)
+            (f"%{keyword}%", f"%{keyword}%", f"%{keyword}%", limit)
         )
         rows = cursor.fetchall()
 
@@ -290,11 +307,55 @@ def stats():
         cursor.execute("SELECT priority, COUNT(*) FROM todos GROUP BY priority")
         by_priority = dict(cursor.fetchall())
 
+        # 按标签统计
+        cursor.execute("SELECT tags FROM todos WHERE tags IS NOT NULL AND tags != ''")
+        rows = cursor.fetchall()
+        tag_counter = {}
+        for row in rows:
+            tags = row["tags"].split(",") if row["tags"] else []
+            for tag in tags:
+                tag = tag.strip()
+                if tag:
+                    tag_counter[tag] = tag_counter.get(tag, 0) + 1
+
     return {
         "total": total,
         "completed": completed,
         "pending": pending,
-        "by_priority": by_priority
+        "by_priority": by_priority,
+        "by_tag": tag_counter
+    }
+
+
+@app.command()
+@json_output
+def tags():
+    """列出所有标签"""
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT tags FROM todos WHERE tags IS NOT NULL AND tags != ''")
+        rows = cursor.fetchall()
+
+        # 统计标签
+        tag_counter = {}
+        for row in rows:
+            tags = row["tags"].split(",") if row["tags"] else []
+            for tag in tags:
+                tag = tag.strip()
+                if tag:
+                    tag_counter[tag] = tag_counter.get(tag, 0) + 1
+
+        # 按数量排序
+        sorted_tags = sorted(tag_counter.items(), key=lambda x: x[1], reverse=True)
+        tags_list = [{"tag": tag, "count": count} for tag, count in sorted_tags]
+
+    return {
+        "success": True,
+        "data": {
+            "total_tags": len(tag_counter),
+            "total_usages": sum(tag_counter.values()),
+            "tags": tags_list
+        }
     }
 
 

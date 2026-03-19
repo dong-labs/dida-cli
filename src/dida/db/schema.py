@@ -6,7 +6,7 @@
 from dong.db import SchemaManager
 from .connection import DidaDatabase
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 
 
 class DidaSchemaManager(SchemaManager):
@@ -31,6 +31,7 @@ class DidaSchemaManager(SchemaManager):
                     completed BOOLEAN DEFAULT 0,
                     priority TEXT DEFAULT 'medium',
                     due_date TEXT,
+                    tags TEXT DEFAULT '',
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
                     note TEXT
@@ -41,17 +42,21 @@ class DidaSchemaManager(SchemaManager):
         with DidaDatabase.get_cursor() as cur:
             cur.execute("CREATE INDEX IF NOT EXISTS idx_todos_completed ON todos(completed)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_todos_due_date ON todos(due_date)")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_todos_tags ON todos(tags)")
 
 
 # 兼容性函数
 def get_schema_version() -> str | None:
     return DidaSchemaManager().get_stored_version()
 
+
 def set_schema_version(version: str) -> None:
     DidaDatabase.set_meta(DidaSchemaManager.VERSION_KEY, version)
 
+
 def is_initialized() -> bool:
     return DidaSchemaManager().is_initialized()
+
 
 def init_database() -> None:
     schema = DidaSchemaManager()

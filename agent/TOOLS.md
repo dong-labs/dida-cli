@@ -1,83 +1,100 @@
-# TOOLS.md - 事咚咚的工具箱
+# TOOLS.md - 工具箱
 
-## 命令行工具 (CLI)
+我的核心工具是 `dong-dida` CLI。
 
-### 安装
+## 安装
+
 ```bash
-pip install dida-cli
+pipx install dida-cli
 ```
 
-### 基础命令
+## 命令列表
+
+### 初始化
+
 ```bash
-dida init              # 初始化
-dida add "内容"        # 添加待办
-dida add "内容" -p high  # 指定优先级
-dida add "内容" -d "2026-03-16 15:00"  # 指定截止时间
-dida ls                # 列出所有
-dida ls -p high        # 按优先级筛选
-dida get 1             # 获取单条
-dida done 1            # 标记完成
-dida undo 1            # 取消完成
-dida update 1 -c "新内容"  # 更新
-dida delete 1          # 删除
-dida search "关键词"   # 搜索
-dida stats             # 统计
+dong-dida init
 ```
 
----
+### 创建待办
 
-## 数据位置
-
+```bash
+dong-dida add "完成项目报告"
+dong-dida add "重要会议" --due "2026-03-20" --priority high
+dong-dida add "开发任务" --tags "工作,开发"
 ```
-~/.dida/dida.db
+
+### 列出待办
+
+```bash
+dong-dida ls                    # 列出所有待办
+dong-dida ls --limit 50         # 指定数量
+dong-dida ls --completed        # 只看已完成
+dong-dida ls --priority high    # 按优先级筛选
+dong-dida ls --tag "工作"       # 按标签筛选
 ```
 
-备份：直接复制这个文件
+### 搜索待办
+
+```bash
+dong-dida search "关键词"
+dong-dida search "报告" --limit 10
+```
+
+### 获取详情
+
+```bash
+dong-dida get 123               # 获取待办详情
+```
+
+### 更新待办
+
+```bash
+dong-dida update 123 --content "更新内容"
+dong-dida update 123 --due "2026-03-25"
+dong-dida update 123 --priority critical
+```
+
+### 标记完成
+
+```bash
+dong-dida done 123              # 标记完成
+dong-dida undo 123              # 取消完成
+```
+
+### 删除待办
+
+```bash
+dong-dida delete 123 --force    # 删除待办
+```
+
+### 查看标签
+
+```bash
+dong-dida tags                  # 列出所有标签及数量
+```
+
+### 统计信息
+
+```bash
+dong-dida stats                 # 统计待办数量、完成情况、优先级分布
+```
+
+## JSON 输出
+
+所有命令支持 JSON 输出，方便 AI 解析：
+
+```bash
+dong-dida add "xxx"
+dong-dida ls
+dong-dida search "关键词"
+dong-dida stats
+```
+
+## 数据库
+
+数据存储在 `~/.dong/dida.db`
 
 ---
 
-## 优先级
-
-| 级别 | 说明 |
-|------|------|
-| critical | 紧急重要 |
-| high | 重要 |
-| medium | 普通（默认） |
-| low | 不急 |
-
----
-
-## 用户意图映射
-
-| 用户说 | 命令 |
-|--------|------|
-| "记一下..." | `dida add "..."` |
-| "待办：..." | `dida add "..."` |
-| "今天要做什么" | `dida ls` |
-| "有多少待办" | `dida stats` |
-| "做完了" | `dida done <id>` |
-| "撤销完成" | `dida undo <id>` |
-| "找关于...的" | `dida search "..."` |
-| "删除这条" | `dida delete <id>` |
-
----
-
-## 快捷操作
-
-- 记任务：直接说"记一下：..."
-- 查看列表：说"今天要做什么"
-- 标记完成：说"做完了 [id]"
-- 搜索：说"找：关键词"
-
----
-
-## 任务状态
-
-| 状态 | 说明 |
-|------|------|
-| 0 | 未完成 |
-| 1 | 已完成 |
-
----
-
-*工具齐备，随时记录 🕐*
+*✅ 待办不遗漏，事事有着落*
