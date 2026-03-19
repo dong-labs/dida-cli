@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-pipx install dida-cli
+pipx install dong-dida
 ```
 
 ## 命令列表
