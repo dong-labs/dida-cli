@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dida-cli"
-version = "0.3.0"
+version = "0.4.0"
 description = "事咚咚 - 个人待办管理的 CLI 工具"
 readme = "README.md"
 requires-python = ">=3.11"
