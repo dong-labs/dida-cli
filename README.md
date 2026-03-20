@@ -2,6 +2,8 @@
 
 > 管理个人待办事项的 CLI 工具 —— 为事咚咚智能体提供底层能力
 
+[![Version](https://img.shields.io/badge/Version-0.4.0-blue.svg)](https://pypi.org/project/dong-dida/)
+
 ## 产品定位
 
 > **在你最自然的地方，用最自然的方式，管理你要做的事**
