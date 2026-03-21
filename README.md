@@ -2,7 +2,7 @@
 
 > 管理个人待办事项的 CLI 工具 —— 为事咚咚智能体提供底层能力
 
-[![Version](https://img.shields.io/badge/Version-0.4.0-blue.svg)](https://pypi.org/project/dong-dida/)
+[![Version](https://img.shields.io/badge/Version-0.6.0-blue.svg)](https://pypi.org/project/dong-dida/)
 
 ## 产品定位
 
@@ -46,42 +46,42 @@ pipx install dong-dida
 
 ```bash
 # 初始化
-dida init
+dong-dida init
 
 # 记录待办
-dida add "给妈妈打电话"
-dida add "明天下午三点开会" --due "2026-03-16 15:00"
-dida add "周五前把报告写完" --due "2026-03-14" --priority high
+dong-dida add "给妈妈打电话"
+dong-dida add "明天下午三点开会" --due "2026-03-16 15:00"
+dong-dida add "周五前把报告写完" --due "2026-03-14" --priority high
 
 # 列出待办
-dida ls
+dong-dida ls
 
 # 标记完成
-dida done 1
+dong-dida done 1
 
 # 删除
-dida delete 1
+dong-dida delete 1
 ```
 
 ## 命令
 
 | 命令 | 说明 |
 |------|------|
-| `dida init` | 初始化数据库 |
-| `dida add` | 创建待办 |
-| `dida ls` | 列出待办 |
-| `dida get` | 获取详情 |
-| `dida done` | 标记完成 |
-| `dida undo` | 取消完成 |
-| `dida update` | 更新待办 |
-| `dida delete` | 删除待办 |
-| `dida search` | 搜索待办 |
-| `dida stats` | 统计信息 |
+| `dong-dida init` | 初始化数据库 |
+| `dong-dida add` | 创建待办 |
+| `dong-dida ls` | 列出待办 |
+| `dong-dida get` | 获取详情 |
+| `dong-dida done` | 标记完成 |
+| `dong-dida undo` | 取消完成 |
+| `dong-dida update` | 更新待办 |
+| `dong-dida delete` | 删除待办 |
+| `dong-dida search` | 搜索待办 |
+| `dong-dida stats` | 统计信息 |
 
 ## 数据存储
 
 ```
-~/.dida/dida.db
+~/.dong/dida/dida.db
 ```
 
 ## 开发
