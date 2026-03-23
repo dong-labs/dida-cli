@@ -54,7 +54,7 @@ dong-dida add "明天下午三点开会" --due "2026-03-16 15:00"
 dong-dida add "周五前把报告写完" --due "2026-03-14" --priority high
 
 # 列出待办
-dong-dida ls
+dong-dida list
 
 # 标记完成
 dong-dida done 1
@@ -69,7 +69,7 @@ dong-dida delete 1
 |------|------|
 | `dong-dida init` | 初始化数据库 |
 | `dong-dida add` | 创建待办 |
-| `dong-dida ls` | 列出待办 |
+| `dong-dida list` | 列出待办 |
 | `dong-dida get` | 获取详情 |
 | `dong-dida done` | 标记完成 |
 | `dong-dida undo` | 取消完成 |

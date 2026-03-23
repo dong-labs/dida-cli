@@ -12,21 +12,33 @@ from .db.connection import init_db, get_connection, get_db_path
 from .const import PRIORITIES
 
 app = typer.Typer(
-    name="dida",
+    name="dong-dida",
     help=f"事咚咚 - 个人待办管理 CLI (v{__version__})",
     no_args_is_help=True,
     add_completion=False,
 )
 
 
+def version_callback(value: bool) -> None:
+    """版本号回调函数"""
+    if value:
+        typer.echo(f"dong-dida {__version__}")
+        raise typer.Exit()
+
+
 @app.callback()
 def main_callback(
-    version: bool = typer.Option(False, "--version", "-v", help="显示版本"),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        "-v",
+        help="显示版本",
+        callback=version_callback,
+        is_eager=True,
+    ),
 ) -> None:
     """主回调"""
-    if version:
-        typer.echo(f"dida {__version__}")
-        raise typer.Exit()
+    pass
 
 
 @app.command()
@@ -80,7 +92,7 @@ def add(
 
 @app.command()
 @json_output
-def ls(
+def list(
     limit: int = typer.Option(20, "--limit", "-l", help="显示数量"),
     completed: bool = typer.Option(None, "--completed", help="按完成状态筛选"),
     priority: str = typer.Option(None, "--priority", "-p", help="按优先级筛选"),
